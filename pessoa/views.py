@@ -1,5 +1,6 @@
 from django.urls import reverse
 from django.http import HttpResponse, Http404
+from django.http.response import HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Pessoa, Contato
@@ -12,10 +13,12 @@ class ListaPessoaView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        queryset = queryset.filter(usuario=self.request.user)
         filtro_nome = self.request.GET.get('nome') or None
 
         if filtro_nome:
             queryset = queryset.filter(nome_completo__contains=filtro_nome)
+        
         return queryset
 
 
@@ -23,6 +26,10 @@ class PessoaCreateView(CreateView):
     model = Pessoa
     form_class = PessoaForm
     success_url = '/pessoas/'
+
+    def form_valid(self, form):
+        form.instance.usuario = self.request.user
+        return super().form_valid(form)
 
 
 class PessoaUpdateView(UpdateView):
