@@ -12,14 +12,14 @@ class HomeView(TemplateView):
 
 
 def register(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = NovoUsuarioForm(request.POST)
         if form.is_valid():
             user = form.save()
             login(request, user)
-            messages.success(request, "Cadastro realizado com sucesso!")
+            messages.success(request, 'Cadastro realizado com sucesso!')
             return redirect('home')
-        messages.error(request, "Falha no cadastro do usuário.")
+        messages.error(request, 'Falha no cadastro do usuário.')
     form = NovoUsuarioForm()
     context = {'form': form}
     return render(request, template_name='main/register.html', context=context)
